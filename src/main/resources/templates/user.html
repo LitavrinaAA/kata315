@@ -4,8 +4,28 @@
     <title>Spring Security Example</title>
 </head>
 <body>
-<h1>User, welcome spring boot security page!</h1>
+<div th:replace="header :: content"></div>
 
+
+<h1>User, welcome spring boot security page!</h1>
+<h2>Информация о работнике:</h2>
+
+<table th:border="1">
+    <tr>
+        <th>Имя</th>
+        <th>Фамилия</th>
+        <th>Зарплата</th>
+
+    </tr>
+
+    <tr >
+        <td th:utext="${user.getName()}"></td>
+        <td th:utext="${user.getSurname()}"></td>
+        <td th:utext="${user.getSalary()}"></td>
+    </tr>
+
+
+</table>
 
 </body>
 </html>
