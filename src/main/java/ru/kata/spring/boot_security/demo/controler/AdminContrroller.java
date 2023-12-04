@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.Roles;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -15,14 +14,15 @@ import javax.validation.Valid;
 @Controller
 @RequestMapping("/admin")
 public class AdminContrroller {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RoleService roleService;
+
+    private final UserService userService;
+
+    private final RoleService roleService;
 
     @Autowired
-    public AdminContrroller(UserService userService) {
+    public AdminContrroller(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping("")
@@ -34,7 +34,7 @@ public class AdminContrroller {
     @GetMapping("/addNewUser")
     public String addNewUser(Model model) {
         model.addAttribute("user", new User());
-        model.addAttribute("allRoles", roleService.getRolesClass());
+        model.addAttribute("allRoles", roleService.getRolesList());
         return "new";
     }
 
@@ -43,7 +43,7 @@ public class AdminContrroller {
                           @ModelAttribute("user") @Valid User user,
                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", roleService.getRolesClass());
+            model.addAttribute("allRoles", roleService.getRolesList());
             return "new";
         }
 
@@ -54,11 +54,10 @@ public class AdminContrroller {
     @PostMapping("/userEdit/{id}")
     public String editUser(@PathVariable("id") int id,
                            Model model,
-                           @ModelAttribute("allRoles") Roles allRoles,
                            @ModelAttribute("user") @Valid User user,
                            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", roleService.getRolesClass());
+            model.addAttribute("allRoles", roleService.getRolesList());
             return "edit";
         }
 
@@ -78,7 +77,7 @@ public class AdminContrroller {
 
         //как показать  пароль ?
         model.addAttribute("user", userService.getUser(id));
-        model.addAttribute("allRoles", roleService.getRolesClass());
+        model.addAttribute("allRoles", roleService.getRolesList());
         return "edit";
     }
 }

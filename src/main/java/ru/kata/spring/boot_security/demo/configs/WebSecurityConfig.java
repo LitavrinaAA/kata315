@@ -16,8 +16,8 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserService userService;
-    final SuccessUserHandler loginSuccessHandler;
+    private final UserService userService;
+    private final SuccessUserHandler loginSuccessHandler;
 
 
     @Bean

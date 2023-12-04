@@ -65,6 +65,7 @@ public class UserService implements UserDetailsService {
         }
         return userRepository.save(user);
     }
+
     @Transactional
     public void deleteUser(long id) {
         userRepository.deleteById(id);
@@ -73,6 +74,7 @@ public class UserService implements UserDetailsService {
     public User getUser(long id) {
         return userRepository.getById(id);
     }
+
     @Transactional
     public void updateUser(int id, User user) {
         User userToBeUpdated = getUser(id);

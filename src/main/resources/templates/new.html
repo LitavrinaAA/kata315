@@ -35,7 +35,7 @@
     <br><br>
     <label> роли:</label>
     <ul>
-        <li th:each="role : ${allRoles.getRoles()}">
+        <li th:each="role : ${allRoles}">
             <input type="checkbox" th:field="*{roles}" th:value="${role.getId()}"/>
             <label th:text="${role.getNoPrefix()}"></label>
         </li>
