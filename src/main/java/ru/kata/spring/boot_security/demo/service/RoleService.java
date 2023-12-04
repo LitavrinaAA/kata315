@@ -18,11 +18,11 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-    @Transactional(readOnly = true)
+
     public Role getRoleById(Long id) {
         return roleRepository.getById(id);
     }
-    @Transactional(readOnly = true)
+
     public List<Role> getRolesList() {
         return roleRepository.findAll();
     }
