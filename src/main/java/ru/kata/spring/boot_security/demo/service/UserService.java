@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,19 +73,32 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUser(long id) {
-        return userRepository.getById(id);
+        User user = userRepository.getById(id);
+        return user;
+    }
+
+    public Optional<User> findById(long id) {
+        return userRepository.findById(id);
+    }
+
+    public User getUser(String name) {
+
+        return userRepository.findByUsername(name);
     }
 
     @Transactional
-    public void updateUser(int id, User user) {
-        User userToBeUpdated = getUser(id);
-        userToBeUpdated.setName(user.getName());
-        userToBeUpdated.setSurname(user.getSurname());
-        userToBeUpdated.setSalary(user.getSalary());
-        if (!user.getPassword().isEmpty()) {
-            userToBeUpdated.setPassword(getBCryptPasswordEncoder().encode(user.getPassword()));
-        }
-        userToBeUpdated.setRoles(user.getRoles());
-        userRepository.save(userToBeUpdated);
+    public User updateUser(int id, User user1) {
+
+            User userToBeUpdated = getUser(id);
+            userToBeUpdated.setName(user1.getName());
+            userToBeUpdated.setSurname(user1.getSurname());
+            userToBeUpdated.setAge(user1.getAge());
+            userToBeUpdated.setEmail(user1.getEmail());
+            if (!user1.getPassword().isEmpty()) {
+                userToBeUpdated.setPassword(getBCryptPasswordEncoder().encode(user1.getPassword()));
+            }
+            userToBeUpdated.setRoles(user1.getRoles());
+            return userRepository.save(userToBeUpdated);
+
     }
 }

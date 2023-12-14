@@ -10,6 +10,7 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/admin")
@@ -26,8 +27,16 @@ public class AdminContrroller {
     }
 
     @GetMapping("")
-    public String findAll(Model model) {
+    public String findAll(Model model,
+                          @ModelAttribute("user") User user,
+                          Principal principal) {
+        User admin = userService.getUser(principal.getName());
+//        boolean isContainAdmin = admin.getRoles().contains("ADMIN");
+//        boolean isContainUser = admin.getRoles().contains("2");
         model.addAttribute("allUsers", userService.findAll());
+        model.addAttribute("allRoles", roleService.getRolesList());
+        model.addAttribute("admin", admin );
+
         return "all-users";
     }
 
@@ -74,7 +83,6 @@ public class AdminContrroller {
 
     @PostMapping("/updateUser")
     public String updateUser(@RequestParam("userId") long id, Model model) {
-
         //как показать  пароль ?
         model.addAttribute("user", userService.getUser(id));
         model.addAttribute("allRoles", roleService.getRolesList());

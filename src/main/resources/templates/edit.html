@@ -7,7 +7,7 @@
     <title>Title</title>
 </head>
 <body>
-<div th:replace="header :: content"></div>
+<!--<div th:replace="header :: content"></div>-->
 <br><br>
 <form th:method="POST" th:action="@{/admin/userEdit/{id}(id=${user.getId()})}" th:object="${user}">
     <label for="name">Введите имя:</label>
@@ -22,7 +22,12 @@
     <br><br>
     <label for="salary"> з/п:</label>
     <input type="text" th:field="*{salary}" id="salary">
-<!--    <div style="color:red" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}">Name error</div>-->
+    <div style="color:red" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}">Name error</div>
+
+    <br><br>
+    <label for="email"> email:</label>
+    <input type="email" th:field="*{email}" id="email">
+    <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Name error</div>
 
     <br><br>
     <input type="hidden" th:field="*{username}" id="username">

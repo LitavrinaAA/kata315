@@ -33,14 +33,20 @@ public class User implements UserDetails {
     @Size( min = 2, max = 30, message = "Фамилия от 2 до 30 символов")
     private String surname;
     @Column(name = "salary")
-    @Min( value = 100, message = "Ой...это что ж за работа? тебе не стыдно? ")
-    @Max( value = 1000000, message = "Нет, тут столько зарабатывать не зарзрешают...Скромнее, пожалуйста")
+//    @Min( value = 100, message = "Ой...это что ж за работа? тебе не стыдно? ")
+//    @Max( value = 1000000, message = "Нет, тут столько зарабатывать не зарзрешают...Скромнее, пожалуйста")
     private int salary;
-
+    @Column(name = "age")
+//    @Min( value = 13, message = "Возраст не может быть меньше 13 ")
+//    @Max( value = 90, message = "Возраст не может быть больше 90")
+    private int age;
+    @NotEmpty(message = "введите почту, пожалуйста")
+    private String email;
     @NotEmpty(message = "Username should not be empty")
     private String username;
     @NotEmpty(message = "Pass should not be empty")
     private String password;
+
 
     @ManyToMany(fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -54,16 +60,25 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(long id, String name, String surname, int salary, String username, String password, Collection<Role> roles) {
+
+
+    public User(long id, String name, String surname, int salary, int age, String username, String password, Collection<Role> roles) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.salary = salary;
+        this.age = age;
         this.username = username;
         this.password = password;
         this.roles = roles;
     }
+    public int getAge() {
+        return age;
+    }
 
+    public void setAge(int age) {
+        this.age = age;
+    }
     public long getId() {
         return id;
     }
@@ -122,15 +137,7 @@ public class User implements UserDetails {
         return password;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", salary=" + salary +
-                '}';
-    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -163,5 +170,28 @@ public class User implements UserDetails {
             this.roles = new HashSet<>();
         }
         this.roles.add(role);
+
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", salary=" + salary +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+//                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }
