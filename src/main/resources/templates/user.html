@@ -4,51 +4,47 @@
 <head>
     <!--    <meta charset="UTF-8">-->
     <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-    <title>Spring Security Example</title>
+    <title>User Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
 <body>
 <!--<div th:fragment="navbar"></div>-->
 <header>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid ">
+    <!--    <span class="fw-bold user-email" id="authenticatedUserEmail"></span>-->
+    <!--    <span class="fw-bold user-name" ></span>-->
+    <!--    <span class="fw-bold user-roles" ></span>-->
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid ">
         <span class="navbar-brand">
-                <span class="fw-bold" th:text="${user.getEmail()}"></span>
+                <span class="fw-bold" id="authenticatedUserEmail"></span>
                 <span> with roles: </span>
-                <span th:each="role, iterStat : ${user.getRoles()}">
-                    <span th:text="${role.getNoPrefix()}"></span>
-                    <span th:if="${!iterStat.last}">, </span>
-                </span>
+                <span class="fw-bold user-roles"></span>
 
             </span>
 
 
-        <ul class="navbar-nav  ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/logout}" th:action="@{/logout1}">logout</a>
-            </li>
-        </ul>
+            <ul class="navbar-nav  ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/logout}" th:action="@{/logout1}">logout</a>
+                </li>
+            </ul>
 
-    </div>
-</nav>
+        </div>
+    </nav>
 </header>
 <div class="container">
     <div class="row">
-        <div class="col-3 ">
+        <div class="col-2 ">
             <nav class="nav mt-3 nav-pills flex-column ">
-                <div th:each="role, iterStat : ${user.getRoles()}">
-                    <div th:if="${role.getNoPrefix().equals('ADMIN')}">
-                        <a class="nav-link " href="/admin">Admin</a>
-                    </div>
-                    <div th:if="${role.getNoPrefix().equals('USER')}">
-                        <a class="nav-link active" aria-current="page" href="#">User</a>
-                    </div>
-                </div>
+                <a class="nav-link user-role-admin " href="/admin" style="display: none;">Admin</a>
+                <a class="nav-link active user-role-user" aria-current="page" href="#" style="display: none;">User</a>
             </nav>
         </div>
 
-        <div class="col-7 ">
+        <div class="col-10 ">
             <div class="p-3 mb-2 bg-light text-dark">
                 <p class="fw-bold fs-4">User-information-page</p>
                 <div class="card">
@@ -68,15 +64,13 @@
                             </tr>
 
                             <tr>
-                                <td th:utext="${user.getId()}"></td>
-                                <td th:utext="${user.getName()}"></td>
-                                <td th:utext="${user.getSurname()}"></td>
-                                <td th:utext="${user.getAge()}"></td>
-                                <td th:utext="${user.getEmail()}"></td>
+                                <td class="user-id"></td>
+                                <td class="user-name"></td>
+                                <td class="user-surname"></td>
+                                <td class="user-age"></td>
+                                <td class="user-email"></td>
                                 <td>
-                                    <span th:each="role, iterStat : ${user.getRoles()}">
-                                        <span th:text="${role.getNoPrefix()}"></span>
-                                        <span th:if="${!iterStat.last}">, </span>
+                                    <span class="user-roles">
                                     </span>
                                 </td>
                             </tr>
@@ -89,5 +83,10 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+<script type="text/javascript" src="user.js"></script>
 </body>
 </html>

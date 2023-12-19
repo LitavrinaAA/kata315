@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,33 +23,34 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
-    private UserRepository userRepository;
-
-    public PasswordEncoder getBCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public void setUserRepository(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+//    @Autowired
+//    public void setUserRepository(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
+
+
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
     }
+
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
-        }
-        UserDetails u_test = new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findUserByEmail(email);
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
                 user.getPassword(),
                 mapRolesToAuthorities(user.getRoles()));
 
-        return u_test;
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
@@ -60,45 +62,43 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User saveUser(User user) {
+    public void save(User user) {
         if (!user.getPassword().isEmpty()) {
-            user.setPassword(getBCryptPasswordEncoder().encode(user.getPassword()));
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     @Transactional
-    public void deleteUser(long id) {
+    public void delete(long id) {
         userRepository.deleteById(id);
     }
 
-    public User getUser(long id) {
-        User user = userRepository.getById(id);
-        return user;
+    public User get(long id) {
+        return userRepository.getById(id);
     }
 
-    public Optional<User> findById(long id) {
-        return userRepository.findById(id);
+    public User findById(long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
-    public User getUser(String name) {
-
-        return userRepository.findByUsername(name);
+    public User getByEmail(String email) {
+        return userRepository.findUserByEmail(email);
     }
 
     @Transactional
-    public User updateUser(int id, User user1) {
+    public User update(User user) {
 
-            User userToBeUpdated = getUser(id);
-            userToBeUpdated.setName(user1.getName());
-            userToBeUpdated.setSurname(user1.getSurname());
-            userToBeUpdated.setAge(user1.getAge());
-            userToBeUpdated.setEmail(user1.getEmail());
-            if (!user1.getPassword().isEmpty()) {
-                userToBeUpdated.setPassword(getBCryptPasswordEncoder().encode(user1.getPassword()));
-            }
-            userToBeUpdated.setRoles(user1.getRoles());
-            return userRepository.save(userToBeUpdated);
+        User userToBeUpdated = get(user.getId());
+        userToBeUpdated.setName(user.getName());
+        userToBeUpdated.setSurname(user.getSurname());
+        userToBeUpdated.setAge(user.getAge());
+        userToBeUpdated.setEmail(user.getEmail());
+        if (!user.getPassword().isEmpty()) {
+            userToBeUpdated.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        userToBeUpdated.setRoles(user.getRoles());
+        return userRepository.save(userToBeUpdated);
 
     }
 }

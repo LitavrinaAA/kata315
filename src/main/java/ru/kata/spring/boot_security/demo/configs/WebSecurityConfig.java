@@ -41,11 +41,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //    }
         http.authorizeRequests()
                 .antMatchers("/").permitAll()
-//                .antMatchers("/api/**").permitAll()
+                .antMatchers("/api/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user").hasAnyRole("ADMIN", "USER")
                 .and()
                 .formLogin().successHandler(loginSuccessHandler)
+                .usernameParameter("email") //  email вместо username
                 .and()
                 .logout().logoutSuccessUrl("/")
                 .and().csrf().disable();
