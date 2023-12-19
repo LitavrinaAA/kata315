@@ -21,10 +21,11 @@ function getAuthenticatedUser() {
             document.getElementById('authenticatedUserEmail').textContent = json.email;
             // Получаем массив имен ролей
             let roleNames = json.roles.map(role => role.name);
-            // Преобразуем массив имен ролей в одну строку, разделяя их запятой
+
             const rolesString = roleNames.join(', ');
-            // Устанавливаем полученную строку в соответствующий элемент
+
             document.querySelector('.user-roles').textContent = rolesString;
+
             roleNames.forEach(role => {
                 console.log(role);
                 if (role === 'ROLE_ADMIN') {

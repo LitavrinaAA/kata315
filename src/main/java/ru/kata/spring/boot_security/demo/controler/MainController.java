@@ -8,6 +8,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
+
 @Controller
 public class MainController {
     private final UserService userService;
@@ -30,8 +31,6 @@ public class MainController {
     public String user(ModelMap model, Principal principal) {
         User authenticatedUser = userService.findUserByEmail(principal.getName());
         model.addAttribute("authenticatedUserRoles", authenticatedUser.getRoles());
-//        model.addAttribute("authenticatedUserEmail", authenticatedUser.getEmail()); //??????????????
-//        model.addAttribute("authenticatedUserName", authenticatedUser.getName());
         return "user";
     }
 

@@ -24,6 +24,7 @@ public class RestUserController {
         this.userService = userService;
         this.roleService = roleService;
     }
+
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         System.out.println("Получение всех пользователей");
@@ -34,33 +35,38 @@ public class RestUserController {
     public ResponseEntity<User> getUser(@PathVariable long userId) {
 
         System.out.println("JSON user " + userId + " попросили...");
-            User user = userService.findById(userId);
-            return new ResponseEntity<>(user, HttpStatus.OK);
+        User user = userService.findById(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
 
     }
+
     @PostMapping("/addNewUser")
     public ResponseEntity<User> addNewUser(@RequestBody User user) {
         userService.save(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
     @PostMapping("/updateUser")
-    public User updateUser(@RequestBody User user){
+    public User updateUser(@RequestBody User user) {
         System.out.println("api обновить " + user);
-        return userService.update( user);
+        return userService.update(user);
     }
+
     @GetMapping("/deleteUser/{id}")
-    public ResponseEntity<String>  deleteUser(@PathVariable Long id){
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         System.out.println("api удалить user" + id);
         userService.delete(id);
         return new ResponseEntity<>("User with ID = " + id + " was deleted", HttpStatus.OK);
     }
+
     @GetMapping("/user")
     public ResponseEntity<User> getAuthenticatedUser(Principal principal) {
         User user = userService.getByEmail(principal.getName());
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
     @GetMapping("/roles")
-    public ResponseEntity<List<Role>> getRoles(Principal principal) {
+    public ResponseEntity<List<Role>> getRoles() {
         List<Role> roles = roleService.getRolesList();
         return new ResponseEntity<>(roles, HttpStatus.OK);
     }

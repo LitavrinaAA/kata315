@@ -13,18 +13,27 @@ console.log("загрузился");
     var vJq = jQuery.fn.jquery;
     console.log(vJq);
 }
-
+let allRoles = [];
 var updateModal = document.getElementById('updateModal')
 var delModal = document.getElementById('delModal');
-var saveButton = updateModal.querySelector('.save-button');
-var delButton = delModal.querySelector('.del-button')
+let newUserForm = document.getElementById('newUserForm');
 
-// var allUsersTable = document.getElementById('allUsersTable')
+var updateButton = updateModal.querySelector('.update-button');
+var delButton = delModal.querySelector('.del-button')
+// let newUserButton = newUserForm.querySelector('.save-user-button')
+
+
 var allUsersTable = $("#allUsersTable")
-document.addEventListener('DOMContentLoaded', function () {
-    getAuthenticatedUser();
-    fillUsersTable();
+document.addEventListener('DOMContentLoaded', async function () {
+    try {
+    await getAuthenticatedUser();
+    await getRoles();
+    await fillUsersTable();
+    await fillNewUserRoles();
     console.log('пользователи загружены!');
+    } catch (error) {
+        console.error('There has been a problem:', error);
+    }
 });
 function fillUsersTable() {
     // allUsersTable.empty()
@@ -43,17 +52,21 @@ function fillUsersTable() {
                             <td>${user.email}</td>
                             <td>${user.roles.map(role => ' ' + role.name)}</td>
                             <td>
-                              <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                              data-bs-target="#updateModal" data-bs-whatever="${user.id}">
+                              <button type="button" class="btn btn-primary" 
+                              data-bs-toggle="modal"
+                              data-bs-target="#updateModal" 
+                              data-bs-whatever="${user.id}">
                               Обновить
                               </button>
 
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger" 
-                                data-toggle="modal"
+                                data-bs-toggle="modal"
                                 data-bs-target="#delModal"
-                                onclick="openDeleteModal(${user.id})">Delete</button>
+                                data-bs-whatever="${user.id}">
+                                Удалить
+                                </button>                                
                             </td>
                         </tr>)`
                 allUsersTable.append(tableRow);
@@ -63,97 +76,163 @@ function fillUsersTable() {
                 }
             ))
 }
-// function openDeleteModal(userId) {
-//     // Ваша логика здесь (если она нужна)
-//     $('#delModal').modal('show'); // Вызываем отображение модального окна с id "delModal"
-// }
+function fillNewUserRoles() {
+
+    const userRoles = document.querySelector('.new-user-roles');
+
+    // Очистка списка перед добавлением новых элементов, иначе задваивается
+    userRoles.innerHTML = '';
+    console.log("Заполнить ролями");
+    console.log(allRoles);
+
+    // Добавление новых элементов из allRoles
+    allRoles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role.id;
+        option.text = role.name;
+        console.log("роль: " + role);
+        userRoles.appendChild(option);
+    });
+}
+
+document.getElementById("save-user-button").addEventListener("click", function() {
+    console.log("кнопка создать ");
+    let selectedRoles = [];
+    let roleOptions = document.querySelectorAll('.new-user-roles option:checked');
+
+    roleOptions.forEach((option) => {
+        selectedRoles.push({
+            id: option.value,
+            name: option.textContent
+        });
+    });
+    let user = {
+        name: document.getElementById("newUserName").value,
+        surname: document.getElementById("newUserSurName").value,
+        age: document.getElementById("newUserAge").value,
+        email: document.getElementById("newUserEmail").value,
+        password: document.getElementById("newUserPassword").value,
+        roles: selectedRoles
+    };
+
+    // логика обработки значений и отправки данных
+    fetch('/api/addNewUser', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+            confirm('Ошибка, не удалось сохранить.');
+        }
+        return response.json();
+    })
+        .then(data => {
+            console.log('Ура! Пользователь успешно сохранен:', data);
+            confirm('Пользователь успешно сохранен:', data);
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Произошла ошибка при сохранении пользователя:', error);
+            confirm('Произошла ошибка при сохранении пользователя:', error);
+
+        });
+
+});
 delModal.addEventListener('show.bs.modal', function (event) {
     var button = event.relatedTarget;
-    var recipient = button.getAttribute('data-bs-whatever')
+    var userId = button.getAttribute('data-bs-whatever')
+
     var modalTitle = delModal.querySelector('.del-modal-title')
-    modalTitle.textContent = 'Удалить пользователя с ID: ' + recipient
+    modalTitle.textContent = 'Удалить пользователя с ID: ' + userId
+
+    //проля ввода
     var modalUserId = delModal.querySelector('.del-user-id')
-    var modalBodyDelUserName = delModal.querySelector('.del-user-username')
     var modalBodyName = delModal.querySelector('.del-user-name')
-    var modalBodySurName = delModal.querySelector('.del-user-sur-name') //указать класс там вверху, у поля
+    var modalBodySurName = delModal.querySelector('.del-user-sur-name') //указать класс  у поля
     var modalBodyAge = delModal.querySelector('.del-user-age')
     var modalBodyEmail = delModal.querySelector('.del-user-email')
     var modalBodyPassword = delModal.querySelector('.del-user-password')
-    var modalBodyRoles = delModal.querySelector('.del-user-roles')
 
-    fetch('/api/user/' + recipient)
+    //роли
+    var modalBodyRoles = delModal.querySelector('.del-user-roles')
+    var modalBodyRolesAll = document.querySelector('.del-user-roles');
+    modalBodyRolesAll.innerHTML = '';
+    allRoles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role.id;
+        option.text = role.name;
+        modalBodyRolesAll.appendChild(option);
+    });
+
+    //получить все данные для отображения перед удалением
+    console.log("получаю данные пользователя для удаления")
+    fetch('/api/user/' + userId)
         .then(response => response.json()
             .then(function (json) {
                 console.log(json.name)
                 modalUserId.value = json.id
-                modalBodyDelUserName.value = json.username
                 modalBodyName.value = json.name
                 modalBodySurName.value = json.surname
                 modalBodyAge.value = json.age
                 modalBodyEmail.value = json.email
                 modalBodyPassword.value = json.password
-                // Array.from(modalBodyRoles.options).forEach(option => {
-                //     option.selected = false;
-                // });
-                // for (var i = 0; i < json.roles.length; i++) {
-                //     var roleId = json.roles[i].id;
-                //     Array.from(modalBodyRoles.options).forEach(option => {
-                //         if (parseInt(option.value) === roleId) {
-                //             option.selected = true;
-                //         }
-                //     });
-                // }
+                Array.from(modalBodyRoles.options).forEach(option => {
+                    option.selected = false;
+                });
+                for (var i = 0; i < json.roles.length; i++) {
+                    var roleId = json.roles[i].id;
+                    Array.from(modalBodyRoles.options).forEach(option => {
+                        if (parseInt(option.value) === roleId) {
+                            option.selected = true;
+                        }
+                    });
+                }
 
 
             }))
 
 })
-delButton.addEventListener('click', function (event){
+
+delButton.addEventListener('click', function (){
     var userId = delModal.querySelector('.del-user-id').value
 if (confirm('Are you sure you want to delete this user?')) {
-    fetch('/api/deleteUser', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: userId })
-    })
+    fetch('/api/deleteUser/' + userId)
         .then(response => {
             if (response.ok) {
-                // Обработка успешного удаления пользователя
+                confirm('Пользователь успешно удален');
                 location.reload()
             } else {
-                // Обработка ошибки удаления пользователя
+                confirm('Ошибка удаления');
             }
         })
         .catch(error => {
-            // Обработка сетевой ошибки
+            confirm('Сетевая ошибка');
         });
 }
 })
-saveButton.addEventListener('click', function (event) {
-    var userId = updateModal.querySelector('.user-id').value
+updateButton.addEventListener('click', function () {
 
 
-    // let selectedRoles = [];
-    // let roleOptions = updateModal.querySelectorAll('.user-roles option:checked');
-
-    // roleOptions.forEach((option) => {
-    //     selectedRoles.push({
-    //         id: option.value,
-    //         name: option.textContent
-    //     });
-    // });
+    let selectedRoles = [];
+    let roleOptions = updateModal.querySelectorAll('.user-roles option:checked');
+    roleOptions.forEach((option) => {
+        selectedRoles.push({
+            id: option.value,
+            name: option.textContent
+        });
+    });
 
     let user = {
         id: updateModal.querySelector('.user-id').value,
-        username: updateModal.querySelector('.user-username').value,
         name: updateModal.querySelector('.user-name').value,
         surname: updateModal.querySelector('.user-sur-name').value,
         age: updateModal.querySelector('.user-age').value,
         email: updateModal.querySelector('.user-email').value,
         password: updateModal.querySelector('.user-password').value,
-        // roles: selectedRoles
+        roles: selectedRoles
 
     };
 
@@ -182,11 +261,10 @@ saveButton.addEventListener('click', function (event) {
 updateModal.addEventListener('show.bs.modal', function (event) {
 
     var button = event.relatedTarget
-
     var recipient = button.getAttribute('data-bs-whatever')
     var modalTitle = updateModal.querySelector('.modal-title')
     var modalUserId = updateModal.querySelector('.user-id')
-    var modalBodyUserName = updateModal.querySelector('.user-username')
+
     var modalBodyName = updateModal.querySelector('.user-name')
     var modalBodySurName = updateModal.querySelector('.user-sur-name') //указать класс там вверху, у поля
     var modalBodyAge = updateModal.querySelector('.user-age')
@@ -195,19 +273,16 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     var modalBodyRoles = updateModal.querySelector('.user-roles')
 
     modalTitle.textContent = 'Обновить пользователя с ID:' + recipient
-    fetch('/api/roles')
-        .then(response => response.json()
-            . then(roles => {
-                const selectElement = document.querySelector('.user-roles');
-                roles.forEach(role => {
-                    const option = document.createElement('option');
-                    option.value = role.id;
-                    option.text = role.name;
-                    selectElement.appendChild(option);
-                });
-            }))
-        // Находим элемент select по его классу
-        const selectElement = document.querySelector('.user-roles');
+
+    var modalBodyRolesAll = document.querySelector('.user-roles');
+    modalBodyRolesAll.innerHTML = '';
+    allRoles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role.id;
+        option.text = role.name;
+        modalBodyRolesAll.appendChild(option);
+    });
+
 
     console.log("пробую получить данные пользователя")
     fetch('/api/user/' + recipient)
@@ -215,7 +290,6 @@ updateModal.addEventListener('show.bs.modal', function (event) {
             .then(function (json) {
                 console.log(json.name)
                 modalUserId.value = json.id
-                modalBodyUserName.value = json.username
                 modalBodyName.value = json.name
                 modalBodySurName.value = json.surname
                 modalBodyAge.value = json.age
@@ -237,35 +311,46 @@ updateModal.addEventListener('show.bs.modal', function (event) {
 
             }))
 })
-document.addEventListener('DOMContentLoaded', function () {
-    getAuthenticatedUser();
-});
 
-function getAuthenticatedUser() {
 
-    fetch('/api/user')
-        .then(response => response.json())
-        .then(json => {
-            document.getElementById('authenticatedUserEmail').textContent = json.email;
-            // Получаем массив имен ролей
-            let roleNames = json.roles.map(role => role.name);
-            // Преобразуем массив имен ролей в одну строку, разделяя их запятой
-            const rolesString = roleNames.join(', ');
-            // Устанавливаем полученную строку в соответствующий элемент
-            document.querySelector('.user-roles').textContent = rolesString;
-            roleNames.forEach(role => {
-                console.log(role);
-                if (role === 'ROLE_ADMIN') {
-                    document.querySelector('.user-role-admin').style.display = 'block';
-                }
-                if (role === 'ROLE_USER') {
-                    document.querySelector('.user-role-user').style.display = 'block';
-                }
-            });
-            // document.querySelector('.user-id').textContent = json.id;
-            // document.querySelector('.user-name').textContent = json.name;
-            // document.querySelector('.user-surname').textContent = json.surname;
-            // document.querySelector('.user-age').textContent = json.age;
-            // document.querySelector('.user-email').textContent = json.email;
-        })
+async function getAuthenticatedUser() {
+
+    let response =   await fetch('/api/user');
+    let user1 =  await response.json();
+
+    document.getElementById('authenticatedUserEmail').textContent = user1.email;
+
+    let rolesArray = user1.roles.map(role => role.name)
+    let rolesStr = rolesArray.join(', ')
+    document.querySelector('.admin-roles').textContent = rolesStr;
+
+    rolesArray.forEach(role => {
+        console.log(role);
+        if (role === 'ROLE_ADMIN') {
+            document.querySelector('.user-role-admin').style.display = 'block';
+        }
+        if (role === 'ROLE_USER') {
+            document.querySelector('.user-role-user').style.display = 'block';
+        }
+    });
+
+    console.log("роли в шапку" + user1.roles.map(role => role.name))
+}
+// Функция для получения списка ролей
+async function getRoles() {
+    //заполнить глобальную переменную  allRoles.
+    // Из нее заполняются роли в : 1) модальные окна удаления и 2) обновления 3) форма создания пользователя
+
+    try {
+        const response = await fetch('/api/roles');
+
+        if (!response.ok) {
+            console.error('Network response was not ok');
+        }
+
+        allRoles = await response.json();
+
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
 }

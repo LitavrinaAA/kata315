@@ -1,7 +1,6 @@
 package ru.kata.spring.boot_security.demo.model;
 
 
-
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
@@ -26,24 +25,18 @@ public class User implements UserDetails {
     private long id;
     @Column(name = "name")
     @NotEmpty(message = "Name should not be empty")
-    @Size( min = 2, max = 30, message = "Имя от 2 до 30 символов")
+    @Size(min = 2, max = 30, message = "Имя от 2 до 30 символов")
     private String name;
     @Column(name = "surname")
     @NotEmpty(message = "Name should not be empty")
-    @Size( min = 2, max = 30, message = "Фамилия от 2 до 30 символов")
+    @Size(min = 2, max = 30, message = "Фамилия от 2 до 30 символов")
     private String surname;
-//    @Column(name = "salary")
-////    @Min( value = 100, message = "Ой...это что ж за работа? тебе не стыдно? ")
-////    @Max( value = 1000000, message = "Нет, тут столько зарабатывать не зарзрешают...Скромнее, пожалуйста")
-//    private int salary;
     @Column(name = "age")
-    @Min( value = 13, message = "Возраст не может быть меньше 13 ")
-    @Max( value = 90, message = "Возраст не может быть больше 90")
+    @Min(value = 13, message = "Возраст не может быть меньше 13 ")
+    @Max(value = 90, message = "Возраст не может быть больше 90")
     private int age;
     @NotEmpty(message = "введите почту, пожалуйста")
     private String email;
-//    @NotEmpty(message = "Username should not be empty")
-//    private String username;
     @NotEmpty(message = "Pass should not be empty")
     private String password;
 
@@ -61,17 +54,15 @@ public class User implements UserDetails {
     }
 
 
-
-    public User(long id, String name, String surname, int salary, int age, String username, String password, Collection<Role> roles) {
+    public User(long id, String name, String surname, int age, String password, Collection<Role> roles) {
         this.id = id;
         this.name = name;
         this.surname = surname;
-//        this.salary = salary;
         this.age = age;
-//        this.username = username;
         this.password = password;
         this.roles = roles;
     }
+
     public int getAge() {
         return age;
     }
@@ -79,6 +70,7 @@ public class User implements UserDetails {
     public void setAge(int age) {
         this.age = age;
     }
+
     public long getId() {
         return id;
     }
@@ -103,17 +95,6 @@ public class User implements UserDetails {
         this.surname = surname;
     }
 
-//    public int getSalary() {
-//        return salary;
-//    }
-
-//    public void setSalary(int salary) {
-//        this.salary = salary;
-//    }
-
-//    public void setUsername(String username) {
-//        this.username = username;
-//    }
 
     public void setPassword(String password) {
         this.password = password;
@@ -138,12 +119,10 @@ public class User implements UserDetails {
     }
 
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
-
 
 
     @Override
@@ -165,6 +144,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
+
     public void addRole(Role role) {
         if (this.roles == null) {
             this.roles = new HashSet<>();
@@ -187,10 +167,7 @@ public class User implements UserDetails {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-//                ", salary=" + salary +
                 ", email='" + email + '\'' +
-//                ", username='" + username + '\'' +
-//                ", password='" + password + '\'' +
                 ", roles=" + roles +
                 '}';
     }
