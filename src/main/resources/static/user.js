@@ -1,13 +1,3 @@
-/**
- *
- */
-// $(document).ready(function () {
-//     $('.table .btn').on('click', function (event) {
-//         $('.myForm #exampleModal').modal()
-//     })
-// })
-console.log('Мой JavaScript файл загружен!');
-
 
 document.addEventListener('DOMContentLoaded', function () {
     getAuthenticatedUser();

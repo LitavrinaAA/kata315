@@ -18,11 +18,6 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-
-//    public Role getRoleById(Long id) {
-//        return roleRepository.getById(id);
-//    }
-
     public List<Role> getRolesList() {
         return roleRepository.findAll();
     }

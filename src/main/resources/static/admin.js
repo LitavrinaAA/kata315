@@ -1,18 +1,4 @@
-/**
- *
- */
-// $(document).ready(function () {
-//     $('.table .btn').on('click', function (event) {
-//         $('.myForm #exampleModal').modal()
-//     })
-// })
 
-console.log("загрузился");
-
-    if (window.jQuery) {
-    var vJq = jQuery.fn.jquery;
-    console.log(vJq);
-}
 let allRoles = [];
 var updateModal = document.getElementById('updateModal')
 var delModal = document.getElementById('delModal');
@@ -20,7 +6,7 @@ let newUserForm = document.getElementById('newUserForm');
 
 var updateButton = updateModal.querySelector('.update-button');
 var delButton = delModal.querySelector('.del-button')
-// let newUserButton = newUserForm.querySelector('.save-user-button')
+
 
 
 var allUsersTable = $("#allUsersTable")
@@ -115,7 +101,7 @@ document.getElementById("save-user-button").addEventListener("click", function()
         roles: selectedRoles
     };
 
-    // логика обработки значений и отправки данных
+
     fetch('/api/addNewUser', {
         method: 'POST',
         headers: {
