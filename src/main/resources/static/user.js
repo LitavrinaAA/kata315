@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function getAuthenticatedUser() {
 
-    fetch('/api/user')
+    fetch('/api/user/user')
         .then(response => response.json())
         .then(json => {
             document.getElementById('authenticatedUserEmail').textContent = json.email;

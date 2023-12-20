@@ -13,13 +13,13 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
-public class RestUserController {
+@RequestMapping("/api/admin")
+public class AdminRestController {
     private final UserService userService;
     private final RoleService roleService;
 
     @Autowired
-    public RestUserController(UserService userService, RoleService roleService) {
+    public AdminRestController(UserService userService, RoleService roleService) {
 
         this.userService = userService;
         this.roleService = roleService;

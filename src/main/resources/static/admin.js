@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 function fillUsersTable() {
     // allUsersTable.empty()
-    fetch('/api/users')
+    fetch('/api/admin/users')
         .then(res => res.json())
         .then(data =>
             data.forEach(user => {
@@ -102,7 +102,7 @@ document.getElementById("save-user-button").addEventListener("click", function()
     };
 
 
-    fetch('/api/addNewUser', {
+    fetch('/api/admin/addNewUser', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -155,7 +155,7 @@ delModal.addEventListener('show.bs.modal', function (event) {
 
     //получить все данные для отображения перед удалением
     console.log("получаю данные пользователя для удаления")
-    fetch('/api/user/' + userId)
+    fetch('/api/admin/user/' + userId)
         .then(response => response.json()
             .then(function (json) {
                 console.log(json.name)
@@ -185,7 +185,7 @@ delModal.addEventListener('show.bs.modal', function (event) {
 delButton.addEventListener('click', function (){
     var userId = delModal.querySelector('.del-user-id').value
 if (confirm('Are you sure you want to delete this user?')) {
-    fetch('/api/deleteUser/' + userId)
+    fetch('/api/admin/deleteUser/' + userId)
         .then(response => {
             if (response.ok) {
                 confirm('Пользователь успешно удален');
@@ -222,7 +222,7 @@ updateButton.addEventListener('click', function () {
 
     };
 
-    fetch('/api/updateUser', {
+    fetch('/api/admin/updateUser', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -271,7 +271,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
 
 
     console.log("пробую получить данные пользователя")
-    fetch('/api/user/' + recipient)
+    fetch('/api/admin/user/' + recipient)
         .then(response => response.json()
             .then(function (json) {
                 console.log(json.name)
@@ -301,7 +301,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
 
 async function getAuthenticatedUser() {
 
-    let response =   await fetch('/api/user');
+    let response =   await fetch('/api/admin/user');
     let user1 =  await response.json();
 
     document.getElementById('authenticatedUserEmail').textContent = user1.email;
@@ -328,7 +328,7 @@ async function getRoles() {
     // Из нее заполняются роли в : 1) модальные окна удаления и 2) обновления 3) форма создания пользователя
 
     try {
-        const response = await fetch('/api/roles');
+        const response = await fetch('/api/admin/roles');
 
         if (!response.ok) {
             console.error('Network response was not ok');
