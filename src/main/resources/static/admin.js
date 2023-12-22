@@ -301,7 +301,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
 
 async function getAuthenticatedUser() {
 
-    let response =   await fetch('/api/admin/user');
+    let response =   await fetch('/api/user/user');
     let user1 =  await response.json();
 
     document.getElementById('authenticatedUserEmail').textContent = user1.email;
