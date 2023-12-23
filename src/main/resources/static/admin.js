@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 });
 function fillUsersTable() {
-    // allUsersTable.empty()
+    allUsersTable.empty()
     fetch('/api/admin/users')
         .then(res => res.json())
         .then(data =>
@@ -118,7 +118,8 @@ document.getElementById("save-user-button").addEventListener("click", function()
         .then(data => {
             console.log('Ура! Пользователь успешно сохранен:', data);
             confirm('Пользователь успешно сохранен:', data);
-            location.reload();
+            fillUsersTable();
+
         })
         .catch(error => {
             console.error('Произошла ошибка при сохранении пользователя:', error);
@@ -189,7 +190,8 @@ if (confirm('Are you sure you want to delete this user?')) {
         .then(response => {
             if (response.ok) {
                 confirm('Пользователь успешно удален');
-                location.reload()
+                $('#deleteModalCloseButton').click();
+                fillUsersTable();
             } else {
                 confirm('Ошибка удаления');
             }
@@ -236,7 +238,8 @@ updateButton.addEventListener('click', function () {
     })
         .then(data => {
             console.log('Ура! Пользователь успешно сохранен:', data);
-            location.reload()
+            $('#updateModalCloseButton').click();
+            fillUsersTable();
         })
         .catch(error => {
             console.error('Произошла ошибка при сохранении пользователя:', error);
