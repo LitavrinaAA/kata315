@@ -283,7 +283,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
                 modalBodySurName.value = json.surname
                 modalBodyAge.value = json.age
                 modalBodyEmail.value = json.email
-                modalBodyPassword.value = json.password
+                // modalBodyPassword.value = json.password
 
                 Array.from(modalBodyRoles.options).forEach(option => {
                     option.selected = false;
